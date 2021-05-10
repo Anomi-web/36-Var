@@ -1,0 +1,252 @@
+using System;
+
+namespace _36_2
+{
+    /// <typeparam name="T">Тип хранимой информации</typeparam>
+    public class Stack<T>
+    {
+        private readonly int _Size;
+        private readonly T[] _Array;
+        private int _Top;
+
+        /// <summary>
+        /// Конструктор. Создаём стек
+        /// </summary>
+        /// <param name="Size">Размер стека</param>
+        public Stack(int Size)
+        {
+            this._Size = Size;
+            this._Top = 0;
+            this._Array = new T[this._Size];
+        }
+        /// <summary>
+        /// Маркер верхнего элемента стека
+        /// </summary>
+        public int Top
+        {
+            get
+            {
+                return this._Top;
+            }
+        }
+        /// <summary>
+        /// Размер стека
+        /// </summary>
+        public int Size
+        {
+            get
+            {
+                return this._Size;
+            }
+        }
+        /// <summary>
+        /// Проверить заполнен ли стек
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFull()
+        {
+            return this._Top == this._Size;
+        }
+        /// <summary>
+        /// Проверить пустой ли стек
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            return this._Top == 0;
+        }
+        /// <summary>
+        /// Добавляем элемент в стек
+        /// </summary>
+        /// <param name="Element">Элемент</param>
+        public void Push(T Element)
+        {
+            if (this.IsFull())
+                throw new Exception();
+            this._Array[this._Top++] = Element;
+        }
+        /// <summary>
+        /// Вернуть верхний элемент
+        /// </summary>
+        /// <returns>Элемент</returns>
+        public T Peek()
+        {
+            return this._Array[this._Top - 1];
+        }
+        /// <summary>
+        /// Считывание из стека верхнего элемента и его удаление
+        /// </summary>
+        /// <returns>Элемент</returns>
+        public T Pop()
+        {
+            return this._Array[--this._Top];
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            
+            int count, i;
+            Console.Write("Введите количество элементов в стеке: ");
+            count = Convert.ToInt32(Console.ReadLine());
+            int[] massive = new int[count];
+            Console.WriteLine();
+
+            Stack<int> stack = new Stack<int>(count);
+            Console.WriteLine("Элементы массива: ");
+            for (i = 0; i < count; i++)
+            {
+                ///<summary>
+                ///Инициализация массива и заполнение его целыми числами
+                /// </summary>
+
+                Console.WriteLine($"Введите значение {i + 1} элемента массива");
+                massive[i] = int.Parse(Console.ReadLine());
+
+                ///<summary>
+                ///Инициализируем основной стек и заполняем его элементами массива
+                /// </summary>
+                stack.Push(massive[i]);
+            }
+
+            ///<summary>
+            ///Вывод массива
+            /// </summary>
+
+            Console.WriteLine("Изначальные элементы массива: ");
+            for (i = 0; i < count; i++)
+            {
+                
+                Console.Write(massive[i] + " ");
+            }
+            Console.WriteLine("\n");
+
+            ///<summary>
+            ///Дополнительный стек для работы с основным и удалением в нём необходимых ячеек
+            /// </summary>
+            Stack<int> stack_dop = new Stack<int>(count/2);
+
+            ///<summary>
+            ///Проверка количества элементов на четность/нечетность
+            ///Если деление count на 2 не даёт остатка(== 0), то count чётное число
+            /// </summary>
+            if (count % 2 == 0)
+            {
+                ///<summary>
+                ///Удаляем два элемента в середине стека
+                /// </summary>
+
+                ///<summary>
+                ///Выносим все элементы до требуемых к удалению в отдельный стек
+                /// </summary>
+                for (i = 0; i < count / 2 - 1; i++)
+                {
+                    stack_dop.Push(stack.Pop());
+                }
+
+                ///<summary>
+                ///Удаляем два элемента
+                /// </summary>
+                stack.Pop();
+                stack.Pop();
+
+                ///<summary>
+                ///Добавляем вынесенные элементы обратно в массив
+                ///</summary>
+                do
+                {
+                    stack.Push(stack_dop.Pop());
+                }
+                while (stack_dop.Top != 0);
+            }
+            else
+            {
+                ///<summary>
+                ///Удаляем элемент в середине стека
+                /// </summary>
+
+                ///<summary>
+                ///Выносим все элементы до требуемых к удалению в отдельный стек
+                /// </summary>
+                for (i = 0; i < count / 2; i++)
+                {
+                    stack_dop.Push(stack.Pop());
+                }
+                ///<summary>
+                ///Удаляем элемент
+                /// </summary>
+                stack.Pop();
+
+                ///<summary>
+                ///Добавляем вынесенные элементы обратно в массив
+                ///</summary>
+                do
+                {
+                    stack.Push(stack_dop.Pop());
+                }
+                while (stack_dop.Top != 0);
+            }
+
+            ///<summary>
+            ///Сохраняем в стек массив, обнуляя его и внося затем новые значения
+            /// </summary>
+            int top = stack.Top;
+            massive = new int[count];
+            for (i = 0; i < top; i++)
+            {
+                massive[i] = stack.Pop();
+            }
+            Console.WriteLine("Элементы стека после удаления середины");
+            for (i = 0; i < top; i++)
+            {
+                Console.Write(massive[i] + " ");
+
+                ///<summary>
+                ///Возвращаем элементы обратно в стек
+                /// </summary>
+                stack.Push(massive[i]);
+            }
+            Console.WriteLine("\n");
+
+
+
+            ///<summary>
+            ///Дополнительный стек для работы с основным и удалением в нём необходимых ячеек
+            /// </summary>
+            Stack<int> stack_dop2 = new Stack<int>(count / 2);
+
+            for (i = 0; i < top; i+= 2)
+            {
+                ///<summary>
+                ///Четный индекс элемента(0,2,4..)
+                /// </summary>
+                stack_dop.Push(stack.Pop());
+
+                ///<summary>
+                ///Нечетный индекс элемента(1,3..)
+                ///По условию удаляем их
+                /// </summary>
+
+                stack_dop2.Push(stack.Pop());
+            }
+
+            ///<summary>
+            ///Возвращаем элементы обратно в основной стек
+            /// </summary>
+            top = stack_dop.Top;
+            for(i = 0; i < top; i++)
+            {
+                stack.Push(stack_dop.Pop());
+            }
+
+            Console.WriteLine("Элементы стека после удаления каждого второго элемента");
+            for (i = 0; i < top; i++)
+            {
+                massive[i] = stack.Pop();
+                Console.Write(massive[i] + " ");
+            }
+            Console.WriteLine("\n");
+        }
+    }
+}
